@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"be-task-management/internal/app/task"
 	"be-task-management/internal/config"
 
 	"github.com/gin-gonic/gin"
@@ -8,5 +9,11 @@ import (
 )
 
 func SetupRoutes(r *gin.RouterGroup, db *gorm.DB, cfg *config.Config) {
+	// task
+	taskRepository := task.NewRepository(db)
+	taskService := task.NewService(taskRepository)
+	taskHandler := task.NewHandler(taskService)
 
+	task := r.Group("task")
+	task.POST("/", taskHandler.Create)
 }
