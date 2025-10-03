@@ -129,3 +129,34 @@ func (h *handler) Delete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, utils.SuccessApiResponse("Delete task successfully", TaskFormatter(task)))
 }
+
+func (h *handler) ChangeStatus(c *gin.Context) {
+	var param ParamTaskRequest
+	var input TaskStatusRequest
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := utils.ValidationError(err, TaskRequest{})
+
+		c.JSON(http.StatusBadRequest, utils.ErrorApiResponse("Change status task failed", errors))
+		return
+	}
+
+	err = c.ShouldBindUri(&param)
+	if err != nil {
+		errors := utils.ValidationError(err, TaskRequest{})
+
+		c.JSON(http.StatusBadRequest, utils.ErrorApiResponse("Change status task failed", errors))
+		return
+	}
+
+	task, err := h.s.ChangeStatus(param, input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.ErrorApiResponse("Change status task failed", gin.H{
+			"error": err.Error(),
+		}))
+		return
+	}
+
+	c.JSON(http.StatusOK, utils.SuccessApiResponse("Change status task successfully", TaskFormatter(task)))
+}

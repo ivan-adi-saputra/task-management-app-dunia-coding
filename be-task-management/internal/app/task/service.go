@@ -12,6 +12,7 @@ type Service interface {
 	Create(input TaskRequest) (Task, error)
 	Update(param ParamTaskRequest, input TaskRequest) (Task, error)
 	Delete(param ParamTaskRequest) (Task, error)
+	ChangeStatus(param ParamTaskRequest, input TaskStatusRequest) (Task, error)
 }
 
 type service struct {
@@ -127,4 +128,29 @@ func (s *service) Delete(param ParamTaskRequest) (Task, error) {
 	}
 
 	return task, nil
+}
+
+func (s *service) ChangeStatus(param ParamTaskRequest, input TaskStatusRequest) (Task, error) {
+	if isInt := utils.CheckIsInt(param.ID); !isInt {
+		return Task{}, errors.New("The parameters passed must be integers.")
+	}
+
+	task, err := s.r.GetById(param.ID)
+	if err != nil {
+		return Task{}, errors.New("An error occurred while retrieving data")
+	}
+
+	if task.ID == 0 {
+		message := fmt.Sprintf("Task with id: %d not found", param.ID) // Task with id: %!s(int=1) not found
+		return Task{}, errors.New(message)
+	}
+
+	task.Status = input.Status
+
+	newTask, err := s.r.Update(task)
+	if err != nil {
+		return Task{}, errors.New("An error occurred while changing data")
+	}
+
+	return newTask, nil
 }

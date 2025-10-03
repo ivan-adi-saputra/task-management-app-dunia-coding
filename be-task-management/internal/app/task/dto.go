@@ -20,6 +20,10 @@ type ParamTaskRequest struct {
 	ID int `uri:"id"`
 }
 
+type TaskStatusRequest struct {
+	Status string `json:"status" binding:"required,oneof=pending in-progress completed"`
+}
+
 // response
 type taskFormatter struct {
 	ID          uint   `json:"id"`
