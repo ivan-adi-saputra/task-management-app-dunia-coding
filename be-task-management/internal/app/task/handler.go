@@ -77,3 +77,55 @@ func (h *handler) Create(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, utils.SuccessApiResponse("Create task successfully", TaskFormatter(task)))
 }
+
+func (h *handler) Update(c *gin.Context) {
+	var param ParamTaskRequest
+	var input TaskRequest
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := utils.ValidationError(err, TaskRequest{})
+
+		c.JSON(http.StatusBadRequest, utils.ErrorApiResponse("Update task failed", errors))
+		return
+	}
+
+	err = c.ShouldBindUri(&param)
+	if err != nil {
+		errors := utils.ValidationError(err, TaskRequest{})
+
+		c.JSON(http.StatusBadRequest, utils.ErrorApiResponse("Update task failed", errors))
+		return
+	}
+
+	task, err := h.s.Update(param, input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.ErrorApiResponse("Update task failed", gin.H{
+			"error": err.Error(),
+		}))
+		return
+	}
+
+	c.JSON(http.StatusOK, utils.SuccessApiResponse("Update task successfully", TaskFormatter(task)))
+}
+
+func (h *handler) Delete(c *gin.Context) {
+	var param ParamTaskRequest
+	err := c.ShouldBindUri(&param)
+	if err != nil {
+		errors := utils.ValidationError(err, TaskRequest{})
+
+		c.JSON(http.StatusBadRequest, utils.ErrorApiResponse("Delete task failed", errors))
+		return
+	}
+
+	task, err := h.s.Delete(param)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.ErrorApiResponse("Delete task failed", gin.H{
+			"error": err.Error(),
+		}))
+		return
+	}
+
+	c.JSON(http.StatusOK, utils.SuccessApiResponse("Delete task successfully", TaskFormatter(task)))
+}

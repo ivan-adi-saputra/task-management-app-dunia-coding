@@ -18,4 +18,6 @@ func SetupRoutes(r *gin.RouterGroup, db *gorm.DB, cfg *config.Config) {
 	task.GET("/", taskHandler.GetAll)
 	task.GET("/:id", taskHandler.GetById)
 	task.POST("/", taskHandler.Create)
+	task.PUT("/:id", taskHandler.Update)
+	task.DELETE("/:id", taskHandler.Delete)
 }

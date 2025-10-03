@@ -6,6 +6,8 @@ type Repository interface {
 	GetAll(filter TaskFilterRequest) ([]Task, error)
 	GetById(id int) (Task, error)
 	Create(task Task) (Task, error)
+	Update(task Task) (Task, error)
+	Delete(id int) (Task, error)
 }
 
 type repository struct {
@@ -50,9 +52,28 @@ func (r *repository) GetById(id int) (Task, error) {
 }
 
 func (r *repository) Create(task Task) (Task, error) {
+	err := r.db.Create(&task).Error
+	if err != nil {
+		return task, err
+	}
+
+	return task, nil
+}
+
+func (r *repository) Update(task Task) (Task, error) {
 	err := r.db.Save(&task).Error
 	if err != nil {
 		return task, err
+	}
+
+	return task, nil
+}
+
+func (r *repository) Delete(id int) (Task, error) {
+	var task Task
+	err := r.db.Where("id = ?", id).Delete(&task).Error
+	if err != nil {
+		return Task{}, err
 	}
 
 	return task, nil
