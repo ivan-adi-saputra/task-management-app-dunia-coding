@@ -15,5 +15,7 @@ func SetupRoutes(r *gin.RouterGroup, db *gorm.DB, cfg *config.Config) {
 	taskHandler := task.NewHandler(taskService)
 
 	task := r.Group("task")
+	task.GET("/", taskHandler.GetAll)
+	task.GET("/:id", taskHandler.GetById)
 	task.POST("/", taskHandler.Create)
 }
