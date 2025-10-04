@@ -10,6 +10,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { TbEdit } from "react-icons/tb";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { confirmAlert } from "react-confirm-alert";
+import Link from "next/link";
 
 const tableHeaders = [
   "No",
@@ -61,10 +62,13 @@ export default function Home() {
       <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Tasks</h1>
-          <button className="flex items-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-150">
+          <Link
+            href={"/add"}
+            className="flex items-center cursor-pointer bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-150"
+          >
             <IoMdAdd className="w-5 h-5 mr-2" />
             New Task
-          </button>
+          </Link>
         </div>
 
         <div className="bg-white p-4 rounded-xl shadow-sm mb-6">

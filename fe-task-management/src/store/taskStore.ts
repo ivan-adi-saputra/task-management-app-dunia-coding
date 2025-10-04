@@ -11,6 +11,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
   tasks: [],
   isLoading: false,
   error: null,
+  success: false,
 
   getTasks: async (params) => {
     set({ isLoading: true, error: null });
@@ -47,6 +48,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       );
       set((state) => ({
         tasks: [...state.tasks, response.data.data],
+        success: true,
       }));
     } catch (err) {
       const errMessage = handleError(err);
@@ -61,7 +63,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         theme: "light",
         transition: Bounce,
       });
-      set({ error: errMessage });
+      set({ error: errMessage, success: false });
     } finally {
       set({ isLoading: false });
     }
@@ -105,6 +107,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         tasks: state.tasks.map((task) =>
           task.id === id ? response.data.data : task
         ),
+        success: true,
       }));
     } catch (err) {
       const errMessage = handleError(err);
@@ -119,7 +122,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         theme: "light",
         transition: Bounce,
       });
-      set({ error: errMessage });
+      set({ error: errMessage, success: false });
     } finally {
       set({ isLoading: false });
     }
@@ -166,4 +169,6 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       set({ isLoading: false });
     }
   },
+
+  resetSuccess: () => set({ success: false }),
 }));
