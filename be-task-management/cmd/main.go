@@ -3,6 +3,7 @@ package main
 import (
 	"be-task-management/database"
 	"be-task-management/internal/config"
+	"be-task-management/internal/middleware"
 	"be-task-management/internal/routes"
 	"be-task-management/internal/utils"
 	"fmt"
@@ -29,6 +30,9 @@ func main() {
 
 	// setup router
 	router := gin.Default()
+
+	// cors
+	router.Use(middleware.CORSMiddleware())
 
 	v1 := router.Group("/api/v1")
 	routes.SetupRoutes(v1, db, cfg)
