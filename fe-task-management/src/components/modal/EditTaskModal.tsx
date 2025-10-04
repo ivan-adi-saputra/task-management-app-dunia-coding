@@ -17,14 +17,11 @@ import { MdKeyboardArrowDown, MdOutlineDateRange } from "react-icons/md";
 import { Bounce, toast } from "react-toastify";
 
 interface Props {
-  isOpen: boolean;
   onClose: () => void;
   defaultValue?: Task;
 }
 
-const EditTaskModal: NextPage<Props> = ({ isOpen, onClose, defaultValue }) => {
-  if (!isOpen) return null;
-
+const EditTaskModal: NextPage<Props> = ({ onClose, defaultValue }) => {
   const { updateTask, success, resetSuccess, isLoading } = useTaskStore();
 
   const {

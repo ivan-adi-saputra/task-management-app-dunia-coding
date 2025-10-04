@@ -238,11 +238,12 @@ export default function Home() {
           </table>
         </div>
 
-        <EditTaskModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          defaultValue={defaultValue}
-        />
+        {isModalOpen && (
+          <EditTaskModal
+            onClose={handleCloseModal}
+            defaultValue={defaultValue}
+          />
+        )}
       </main>
     </div>
   );
