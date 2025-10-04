@@ -1,8 +1,15 @@
 "use client";
 
+import { useDebounce } from "@/hooks/useDebounce";
+import { useTaskStore } from "@/store/taskStore";
+import { StatusTask } from "@/types/task";
+import { formatDate } from "@/utils/date";
+import { useEffect, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { TbEdit } from "react-icons/tb";
+import "react-confirm-alert/src/react-confirm-alert.css";
+import { confirmAlert } from "react-confirm-alert";
 
 const tableHeaders = [
   "No",
@@ -14,6 +21,41 @@ const tableHeaders = [
 ];
 
 export default function Home() {
+  const { tasks, isLoading, error, getTasks, deleteTask } = useTaskStore();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  useEffect(() => {
+    getTasks({ title: debouncedSearchTerm });
+  }, [getTasks, debouncedSearchTerm]);
+
+  const handleDelete = (id: string) => {
+    confirmAlert({
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this task?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => deleteTask(id),
+        },
+        {
+          label: "No",
+        },
+      ],
+    });
+  };
+
+  const statusStyles: Record<StatusTask, string> = {
+    completed: "bg-green-100 text-green-800",
+    "in-progress": "bg-blue-100 text-blue-800",
+    pending: "bg-yellow-100 text-yellow-800",
+  };
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 lg:p-8">
@@ -32,6 +74,8 @@ export default function Home() {
                 type="text"
                 placeholder="Search"
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                onChange={handleSearchChange}
+                value={searchTerm}
               />
             </div>
           </div>
@@ -52,37 +96,66 @@ export default function Home() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                  1.
-                </td>
-                <td className="px-4 py-3 flex items-center whitespace-nowrap">
-                  <span className="text-sm font-medium text-gray-800">
-                    Setup project structure
-                  </span>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                  19 July, 2025
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 font-medium">
-                  Initialize Go project with modules, folders, and basic
-                  dependencies
-                </td>
+              {isLoading ? (
+                <tr>
+                  <td
+                    className="px-4 py-3 text-center whitespace-nowrap text-sm text-gray-500"
+                    colSpan={tableHeaders.length}
+                  >
+                    Loading...
+                  </td>
+                </tr>
+              ) : tasks.length < 1 ? (
+                <tr>
+                  <td
+                    className="px-4 py-3 text-center whitespace-nowrap text-sm text-gray-500"
+                    colSpan={tableHeaders.length}
+                  >
+                    Task not found
+                  </td>
+                </tr>
+              ) : (
+                tasks?.map((task, index) => (
+                  <tr key={index}>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                      {index + 1}.
+                    </td>
+                    <td className="px-4 py-3 flex items-center whitespace-nowrap">
+                      <span className="text-sm font-medium text-gray-800">
+                        {task.title}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                      {formatDate(task.due_date)}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 font-medium">
+                      {task.description}
+                    </td>
 
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    completed
-                  </span>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap text-sm font-medium space-x-2">
-                  <button className="text-gray-400 hover:text-yellow-600 p-1 rounded-full hover:bg-gray-100 transition cursor-pointer">
-                    <TbEdit className="w-5 h-5" />
-                  </button>
-                  <button className="text-gray-400 hover:text-red-600 p-1 rounded-full hover:bg-gray-100 transition cursor-pointer">
-                    <RiDeleteBin6Line className="w-5 h-5" />
-                  </button>
-                </td>
-              </tr>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span
+                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          statusStyles[task.status]
+                        }`}
+                      >
+                        {task.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium space-x-2">
+                      <button className="text-gray-400 hover:text-yellow-600 p-1 rounded-full hover:bg-gray-100 transition cursor-pointer">
+                        <TbEdit className="w-5 h-5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(task.id)}
+                        className="text-gray-400 hover:text-red-600 p-1 rounded-full hover:bg-gray-100 transition cursor-pointer"
+                      >
+                        <RiDeleteBin6Line className="w-5 h-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
