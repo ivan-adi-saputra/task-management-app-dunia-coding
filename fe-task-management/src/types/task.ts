@@ -50,3 +50,9 @@ export const taskSchema = z.object({
 });
 
 export type TaskFormData = z.infer<typeof taskSchema>;
+
+export const TaskStatusOption = [
+  { value: StatusTask.Pending, title: "Pending" },
+  { value: StatusTask.InProgress, title: "In Progress" },
+  { value: StatusTask.Completed, title: "Completed" },
+];

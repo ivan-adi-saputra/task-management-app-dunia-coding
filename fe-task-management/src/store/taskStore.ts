@@ -131,7 +131,6 @@ export const useTaskStore = create<TaskState>((set, get) => ({
   changeStatusTask: async (id, status) => {
     set({ isLoading: true, error: null });
 
-    const previousTasks = get().tasks;
     set((state) => ({
       tasks: state.tasks.map((task) =>
         task.id === id ? { ...task, status: status } : task
@@ -140,7 +139,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
 
     try {
       const response = await api.put<ApiResponse<Task>>(
-        `${TASK_ENDPOINT}change-status/${id}/`,
+        `${TASK_ENDPOINT}change-status/${id}`,
         {
           status,
         }

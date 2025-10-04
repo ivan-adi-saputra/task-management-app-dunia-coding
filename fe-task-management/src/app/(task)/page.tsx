@@ -2,7 +2,7 @@
 
 import { useDebounce } from "@/hooks/useDebounce";
 import { useTaskStore } from "@/store/taskStore";
-import { StatusTask, Task } from "@/types/task";
+import { StatusTask, Task, TaskStatusOption } from "@/types/task";
 import { formatDate } from "@/utils/date";
 import { useEffect, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
@@ -13,6 +13,7 @@ import { confirmAlert } from "react-confirm-alert";
 import Link from "next/link";
 import EditTaskModal from "@/components/modal/EditTaskModal";
 import { Bounce, toast } from "react-toastify";
+import { FaExchangeAlt } from "react-icons/fa";
 
 const tableHeaders = [
   "No",
@@ -24,7 +25,8 @@ const tableHeaders = [
 ];
 
 export default function Home() {
-  const { tasks, isLoading, error, getTasks, deleteTask } = useTaskStore();
+  const { tasks, isLoading, getTasks, changeStatusTask, deleteTask } =
+    useTaskStore();
 
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -79,6 +81,37 @@ export default function Home() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setDefaultValue(undefined);
+  };
+
+  const handleChangeStatusTask = (id: string) => {
+    const task = tasks.find((task) => task.id == id);
+    if (!task) {
+      toast.error("Task not found", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      return;
+    }
+
+    const options = TaskStatusOption.filter(
+      (option) => option.value != task.status
+    );
+
+    confirmAlert({
+      title: "Change Status",
+      message: "Choose the new status for this task:",
+      buttons: options.map((option) => ({
+        label: option.title,
+        onClick: () => changeStatusTask(id, option.value),
+      })),
+    });
   };
 
   const statusStyles: Record<StatusTask, string> = {
@@ -176,6 +209,13 @@ export default function Home() {
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => handleChangeStatusTask(task.id)}
+                        className="text-gray-400 hover:text-green-600 p-1 rounded-full hover:bg-gray-100 transition cursor-pointer"
+                      >
+                        <FaExchangeAlt className="w-5 h-5" />
+                      </button>
                       <button
                         type="button"
                         onClick={() => editTask(task.id)}

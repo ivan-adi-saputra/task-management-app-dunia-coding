@@ -1,7 +1,13 @@
 "use client";
 
 import { useTaskStore } from "@/store/taskStore";
-import { StatusTask, Task, TaskFormData, taskSchema } from "@/types/task";
+import {
+  StatusTask,
+  Task,
+  TaskFormData,
+  taskSchema,
+  TaskStatusOption,
+} from "@/types/task";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { NextPage } from "next";
 import { useEffect } from "react";
@@ -15,12 +21,6 @@ interface Props {
   onClose: () => void;
   defaultValue?: Task;
 }
-
-const taskStatus = [
-  { value: StatusTask.Pending, title: "Pending" },
-  { value: StatusTask.InProgress, title: "In Progress" },
-  { value: StatusTask.Completed, title: "Completed" },
-];
 
 const EditTaskModal: NextPage<Props> = ({ isOpen, onClose, defaultValue }) => {
   if (!isOpen) return null;
@@ -158,7 +158,7 @@ const EditTaskModal: NextPage<Props> = ({ isOpen, onClose, defaultValue }) => {
                     {...register("status")}
                     className="w-full p-3 border border-gray-300 rounded-lg appearance-none bg-white pr-10 focus:ring-green-500 focus:border-green-500 transition duration-150"
                   >
-                    {taskStatus.map((status, index) => (
+                    {TaskStatusOption.map((status, index) => (
                       <option key={index} value={status.value}>
                         {status.title}
                       </option>

@@ -1,6 +1,12 @@
 "use client";
 
-import { StatusTask, Task, TaskFormData, taskSchema } from "@/types/task";
+import {
+  StatusTask,
+  Task,
+  TaskFormData,
+  taskSchema,
+  TaskStatusOption,
+} from "@/types/task";
 import { NextPage } from "next";
 import { MdKeyboardArrowDown, MdOutlineDateRange } from "react-icons/md";
 import { useForm } from "react-hook-form";
@@ -11,12 +17,6 @@ import { useRouter } from "next/navigation";
 import { Bounce, toast } from "react-toastify";
 
 interface Props {}
-
-const taskStatus = [
-  { value: StatusTask.Pending, title: "Pending" },
-  { value: StatusTask.InProgress, title: "In Progress" },
-  { value: StatusTask.Completed, title: "Completed" },
-];
 
 const AddPage: NextPage<Props> = ({}) => {
   const { addTask, success, resetSuccess, isLoading } = useTaskStore();
@@ -128,7 +128,7 @@ const AddPage: NextPage<Props> = ({}) => {
                     {...register("status")}
                     className="w-full p-3 border border-gray-300 rounded-lg appearance-none bg-white pr-10 focus:ring-green-500 focus:border-green-500 transition duration-150"
                   >
-                    {taskStatus.map((status, index) => (
+                    {TaskStatusOption.map((status, index) => (
                       <option key={index} value={status.value}>
                         {status.title}
                       </option>
