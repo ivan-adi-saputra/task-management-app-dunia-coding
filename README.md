@@ -19,7 +19,7 @@ Follow these steps to set up and run both the backend and the frontend on your l
 Start by cloning the project repository:
 
 ```bash
-git clone git@github.com:ivan-adi-saputra/task-management-app-dunia-coding.git
+git clone https://github.com/ivan-adi-saputra/task-management-app-dunia-coding.git
 cd task-management-app-dunia-coding
 ```
 
@@ -34,7 +34,7 @@ cd be-task-management
 
 **2. Environment Configuration**
 
-Create a file named .env in the root directory of the project and define your configuration variables.
+Create a file named `.env` in the root directory of the project and define your configuration variables.
 
 ```bash
 DB_USERNAME=
@@ -80,7 +80,7 @@ cd fe-task-management
 
 **2. Environment Configuration**
 
-Create a file named .env inside the frontend folder and define the variables needed, particularly the link to the running backend API.
+Create a file named `.env` inside the frontend folder and define the variables needed, particularly the link to the running backend API.
 
 ```bash
 NEXT_PUBLIC_API_BASE_URL=
