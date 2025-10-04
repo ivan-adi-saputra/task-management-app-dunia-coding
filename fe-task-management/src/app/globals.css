@@ -53,3 +53,11 @@ body {
   cursor: pointer;
   z-index: 2;
 }
+
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-card {
+  max-height: 90vh;
+  max-width: 38rem;
+}

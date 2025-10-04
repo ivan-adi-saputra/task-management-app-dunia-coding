@@ -2,7 +2,7 @@
 
 import { useDebounce } from "@/hooks/useDebounce";
 import { useTaskStore } from "@/store/taskStore";
-import { StatusTask } from "@/types/task";
+import { StatusTask, Task } from "@/types/task";
 import { formatDate } from "@/utils/date";
 import { useEffect, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
@@ -11,6 +11,8 @@ import { TbEdit } from "react-icons/tb";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { confirmAlert } from "react-confirm-alert";
 import Link from "next/link";
+import EditTaskModal from "@/components/modal/EditTaskModal";
+import { Bounce, toast } from "react-toastify";
 
 const tableHeaders = [
   "No",
@@ -26,6 +28,9 @@ export default function Home() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [defaultValue, setDefaultValue] = useState<Task | undefined>(undefined);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -49,6 +54,31 @@ export default function Home() {
         },
       ],
     });
+  };
+
+  const editTask = (id: string) => {
+    const task = tasks.find((task) => task.id == id);
+    if (!task) {
+      toast.error("Task not found", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      return;
+    }
+
+    setDefaultValue(task);
+    setIsModalOpen(true);
+  };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setDefaultValue(undefined);
   };
 
   const statusStyles: Record<StatusTask, string> = {
@@ -146,7 +176,11 @@ export default function Home() {
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button className="text-gray-400 hover:text-yellow-600 p-1 rounded-full hover:bg-gray-100 transition cursor-pointer">
+                      <button
+                        type="button"
+                        onClick={() => editTask(task.id)}
+                        className="text-gray-400 hover:text-yellow-600 p-1 rounded-full hover:bg-gray-100 transition cursor-pointer"
+                      >
                         <TbEdit className="w-5 h-5" />
                       </button>
                       <button
@@ -163,6 +197,12 @@ export default function Home() {
             </tbody>
           </table>
         </div>
+
+        <EditTaskModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          defaultValue={defaultValue}
+        />
       </main>
     </div>
   );

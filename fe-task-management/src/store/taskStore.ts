@@ -99,7 +99,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await api.put<ApiResponse<Task>>(
-        `${TASK_ENDPOINT}/${id}/`,
+        `${TASK_ENDPOINT}${id}`,
         taskPayload
       );
 
